@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  api-db:
+    container_name: api-db
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 111000
+      POSTGRES_DB: db_aiplus
+    networks:
+      - internal
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  api:
+    depends_on:
+        api-db:
+          condition: service_healthy
+    container_name: api
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+
+    networks:
+      - internal
+
+
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  postgres:
