@@ -5,6 +5,7 @@ import (
 	"dbAiplus/db"
 	"dbAiplus/internal/app/di"
 	"dbAiplus/internal/app/handlers"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -15,8 +16,14 @@ import (
 )
 
 func main() {
-
-	dsn := "postgres://postgres:111000@api-db:5432/db_aiplus?sslmode=disable"
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASSWORD")
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
+	sslMode := os.Getenv("SSL_MODE")
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
+		user, password, host, port, dbName, sslMode)
 	conn, err := db.ConnectionDB(dsn)
 	if err != nil {
 		log.Fatalf("Ошибка подключения к БД: %v", err)
